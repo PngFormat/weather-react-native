@@ -7,7 +7,7 @@ import LocationComponent from './getLocation';
 import { useTheme } from './ThemeContext';
 import { getWeatherImage } from './getWeatherImage';
 
-const WeatherApp = () => {
+const WeatherApp = ( {navigation}: any  ) => {
   const { theme, toggleTheme } = useTheme();
   const [weatherData, setWeatherData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -42,10 +42,15 @@ const WeatherApp = () => {
 
   const handleFetchWeather = useCallback(() => {
     fetchWeatherData(city, searchHistory, setWeatherData, setLoading, setError, setSearchHistory);
+    setCity(city);
   }, [city, searchHistory]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
+    <Button 
+        title="See 6-Day Forecast" 
+        onPress={() => navigation.navigate('WeatherForecast', { city })}
+      />
     <Text style={styles.text}>Weather</Text>
     <TextInput
       style={styles.input}
@@ -58,9 +63,7 @@ const WeatherApp = () => {
     <Button title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`} onPress={toggleTheme} />
     <Text style={styles.text}>Your location</Text>
     <LocationComponent onLocationFetched={handleLocationFetched} />
-    {weatherData&& (
-            <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description}></Image>
-        )}
+    
          {weatherData && (
         <View>
           <View style={styles.row}>
@@ -75,28 +78,6 @@ const WeatherApp = () => {
           <Text>Description: {weatherData.weather[0].description}</Text>
           <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/8655/8655461.png'}} style={styles.icon}></Image>
          </View>
-
-         <View style={styles.row}>
-          <Text>Humidity: {weatherData.main.humidity}%</Text>
-          <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/747/747769.png'}} style={styles.icon}></Image>
-        </View>
-        <View style={styles.row}>
-          <Text>Wind Speed: {weatherData.wind.speed} m/s</Text>
-          <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/622/622464.png'}} style={styles.icon}></Image>
-        </View>
-        <View style={styles.row}>
-          <Text>Pressure: {weatherData.main.pressure} hPa</Text>
-          <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/748/748272.png'}} style={styles.icon}></Image>
-        </View>
-        <View style={styles.row}>
-          <Text>Sunrise: {new Date(weatherData.sys.sunrise * 1000).toLocaleTimeString()}</Text>
-          <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/869/869636.png'}} style={styles.icon}></Image>
-        </View>
-        <View style={styles.row}>
-          <Text>Sunset: {new Date(weatherData.sys.sunset * 1000).toLocaleTimeString()}</Text>
-          <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/869/869636.png'}} style={styles.icon}></Image>
-        </View>
-
 
         </View>
       )}
@@ -123,8 +104,10 @@ const WeatherApp = () => {
       )}
       
       </View>
-     
-    </View>
+      {weatherData&& (
+            <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description}></Image>
+        )}
+    </ScrollView>
   );
 };
 
