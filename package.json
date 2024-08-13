@@ -14,10 +14,12 @@
     "asyncstorage": "^1.5.0",
     "axios": "^1.7.3",
     "expo": "~51.0.24",
+    "expo-linear-gradient": "^13.0.2",
     "expo-location": "~17.0.1",
     "expo-status-bar": "~1.12.1",
     "react": "18.2.0",
-    "react-native": "0.74.3"
+    "react-native": "0.74.3",
+    "react-native-linear-gradient": "^2.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
