@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Image,ActivityIndicator, Button, StyleSheet, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
-import { fetchWeatherData } from './fetchWeather';
+import { fetchWeatherData } from '../functions/fetchWeather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import getLocation from './getLocation';
-import LocationComponent from './getLocation';
-import { useTheme } from './ThemeContext';
-import { getWeatherImage } from './getWeatherImage';
+import getLocation from '../functions/getLocation';
+import LocationComponent from '../functions/getLocation';
+import { useTheme } from '../context/ThemeContext';
+import { getWeatherImage } from '../functions/getWeatherImage';
+import { LinearGradient } from 'expo-linear-gradient';
+import { darkTheme,lightTheme } from '../styles/forecastScreenStyle';
 
 const WeatherApp = ( {navigation}: any  ) => {
   const { theme, toggleTheme } = useTheme();
@@ -46,7 +48,12 @@ const WeatherApp = ( {navigation}: any  ) => {
   }, [city, searchHistory]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+   
+    
+       <LinearGradient
+            colors={['#03c2fc', '#61ffba']}
+            style={styles.container}
+        >
     <Button 
         title="See 6-Day Forecast" 
         onPress={() => navigation.navigate('WeatherForecast', { city })}
@@ -85,12 +92,18 @@ const WeatherApp = ( {navigation}: any  ) => {
       <View style={styles.historyContainer}>
       <Text>Search History:</Text>
       {searchHistory.length > 3 ? (
-        <FlatList
-          data={searchHistory}
-          keyExtractor={(item,index) => index.toString()}
-          renderItem={renderItem}
-            />
-
+       <FlatList
+       data={searchHistory}
+       keyExtractor={(item, index) => index.toString()}
+       renderItem={({ item }) => (
+         <TouchableHighlight onPress={() => setCity(item)}>
+           <View style={styles.historyItem}>
+             <Text>{item}</Text>
+           </View>
+         </TouchableHighlight>
+       )}
+       contentContainerStyle={styles.listContent}
+     />
       ): (
         <ScrollView>
           {searchHistory.map((item, index) => (
@@ -107,142 +120,9 @@ const WeatherApp = ( {navigation}: any  ) => {
       {weatherData&& (
             <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description}></Image>
         )}
-    </ScrollView>
+      </LinearGradient>
+  
   );
 };
 
 export default WeatherApp;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    padding: 24,
-  },
-  description:{
-    width:300,
-    height:300,
-},
-  historyContainer: {
-    width: '80%',
-    height:'20%',
-    marginVertical: 20,
-    flex: 1,
-  },
-  historyItem: {
-    padding: 10,
-    borderBottomColor: 'gray',
-    borderBottomWidth: 1,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    width: '80%',
-    marginBottom: 20,
-    paddingHorizontal: 10,
-  },
-  error: {
-    color: 'red',
-  },
-  row: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  icon: {
-    width: 50,
-    height: 50,
-  }
-});
-
-const lightTheme = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#FFFFFF',
-  },
-  description:{
-    width:300,
-    height:300,
-  },
-  text: {
-    color: '#000000',
-  },
-  input: {
-    height: 40,
-    borderColor: '#000000',
-    borderWidth: 1,
-    width: '80%',
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    backgroundColor: '#FFFFFF',
-    color: '#000000',
-  },
-  historyContainer: {
-    width: '80%',
-    height:'20%',
-    marginVertical: 20,
-    flex: 1,
-  },
-  historyItem: {
-    padding: 10,
-    borderBottomColor: '#000000',
-    borderBottomWidth: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  row: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  icon: {
-    width: 50,
-    height: 50,
-  },
-});
-
-const darkTheme = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    padding: 24,
-    backgroundColor: '#000000',
-  },
-  description:{
-    width:300,
-    height:300,
-  },
-  text: {
-    color: '#FFFFFF',
-  },
-  historyContainer: {
-    width: '80%',
-    height:'20%',
-    marginVertical: 20,
-    flex: 1,
-  },
-  input: {
-    height: 40,
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    width: '80%',
-    marginBottom: 20,
-    paddingHorizontal: 10,
-    backgroundColor: '#333333',
-    color: '#FFFFFF',
-  },
-  historyItem: {
-    padding: 10,
-    borderBottomColor: '#CCCCCC',
-    borderBottomWidth: 1,
-    backgroundColor: '#333333',
-  },
-  row: {
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  icon: {
-    width: 50,
-    height: 50,
-  },
-});

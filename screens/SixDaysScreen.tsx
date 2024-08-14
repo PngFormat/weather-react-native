@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import {Image,View, Text, StyleSheet, ActivityIndicator, FlatList, Alert} from 'react-native';
+import {Image,View, Text, StyleSheet, ActivityIndicator, FlatList, Alert,Animated} from 'react-native';
 import axios from 'axios';
-import { fetchWeatherData } from './fetchWeather';
-import { getWeatherImage } from './getWeatherImage';
+import { fetchWeatherData } from '../functions/fetchWeather';
+import { getWeatherImage } from '../functions/getWeatherImage';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
@@ -14,6 +14,7 @@ export default function SixDaysForecast({route}: any) {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
+    const scrollY = new Animated.Value(0);
 
     useEffect(() => {
         fetchForecastData();
@@ -50,6 +51,12 @@ export default function SixDaysForecast({route}: any) {
         );
     }
 
+    const backgroundColor = scrollY.interpolate({
+        inputRange: [0, 300],
+        outputRange: ['#03c2fc', '#61ffba'],
+        extrapolate: 'clamp',
+    });
+
     const dailyForecastArray = forecastData.list
     .filter((item:any, index: number) => index % 8 ===0)
     .slice(0,6)
@@ -67,8 +74,9 @@ export default function SixDaysForecast({route}: any) {
             colors={['#03c2fc', '#61ffba']}
             style={styles.container}
         >
+            <Animated.View style={[styles.container, { backgroundColor }]}>
             <Text  style={styles.title}>5-Day Weather Forecast for {city}</Text>
-            <FlatList
+            <Animated.FlatList
                 data={dailyForecastArray}
                 keyExtractor={(item) => item.date}
                 renderItem={({ item }) => (
@@ -81,7 +89,12 @@ export default function SixDaysForecast({route}: any) {
                     <Text>Description: {item.description}</Text>
                     </View>
                 )}
-                />
+                onScroll={Animated.event(
+                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                    { useNativeDriver: false }
+                )}
+            />
+        </Animated.View>
         </LinearGradient>
         )
     
@@ -93,6 +106,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 24,
+        borderRadius:15,
     },
     temperature: {
         fontWeight: '500',
@@ -114,7 +128,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: '500',
-        fontSize: 25,
+        fontSize: 19,
     },
     image: {
         width: 170,

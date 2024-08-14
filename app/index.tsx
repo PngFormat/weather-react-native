@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {ScrollView,Image, Button, ActivityIndicator, StyleSheet, Text, View, TextInput } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getWeatherImage } from '../getWeatherImage';
+import { getWeatherImage } from '../functions/getWeatherImage';
 
 export default function Page() {
 

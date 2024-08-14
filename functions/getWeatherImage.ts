@@ -6,6 +6,8 @@ export const getWeatherImage = (description: string) =>{
             return 'https://www.vishopper.com/images/products/300x300/SK/15233_bright-sky-with-few-clouds.jpg';
         case 'scattered clouds':
             return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8Q3KLzcPNM93f69ufKa6EKEULt17CCtf_CQ&s';
+        case 'broken clouds':
+            return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQuBdn6aPhZ514QGM8xXaJyIUIVgIPng73KA&s';
         case 'rain':
             return 'https://media.istockphoto.com/id/1257951336/photo/transparent-umbrella-under-rain-against-water-drops-splash-background-rainy-weather-concept.jpg?s=612x612&w=0&k=20&c=lNvbIw1wReb-owe7_rMgW8lZz1zElqs5BOY1AZhyRXs=';
         case 'snow':
