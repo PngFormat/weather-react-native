@@ -1,15 +1,20 @@
 import React from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-const StartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+const StartScreen: React.FC<{ navigation: any,route:any }> = ({ navigation,route }) => {
   return (
-    <View style={styles.container}>
+
+    <LinearGradient
+    colors={['#0b5fa5', '#00ad6b']}
+    style={styles.container}
+>
       <Text style={styles.title}>Welcome to the Weather App</Text>
       <Button
         title="Get Started"
         onPress={() => navigation.navigate('Weather')}
       />
-    </View>
+    </LinearGradient>
   );
 };
 

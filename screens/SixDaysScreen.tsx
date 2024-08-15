@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {Image,View, Text, StyleSheet, ActivityIndicator, FlatList, Alert,Animated} from 'react-native';
+import {TouchableOpacity,Image,View, Text, StyleSheet, ActivityIndicator, FlatList, Alert,Animated} from 'react-native';
 import axios from 'axios';
 import { fetchWeatherData } from '../functions/fetchWeather';
 import { getWeatherImage } from '../functions/getWeatherImage';
@@ -8,7 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const API_KEY_WEATHER = 'cbf8b8330b7cb5b3f1e535563cba25bc';
 
-export default function SixDaysForecast({route}: any) {
+export default function SixDaysForecast({ route, navigation }: any) {
     const { city } = route.params;
     const [forecastData, setForecastData] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(true);
@@ -18,7 +18,6 @@ export default function SixDaysForecast({route}: any) {
 
     useEffect(() => {
         fetchForecastData();
-        // Alert.alert('CITY',city)
 
     },[city]);
 
@@ -80,14 +79,16 @@ export default function SixDaysForecast({route}: any) {
                 data={dailyForecastArray}
                 keyExtractor={(item) => item.date}
                 renderItem={({ item }) => (
+                    <TouchableOpacity onPress={() => navigation.navigate('DetailWeather', { city })}>
                     <View style={styles.dayContainer}>
-                   
-                    <Image source={{ uri: item.image }} style={styles.image}></Image>
-                    <Text  style={styles.date}>Date: {item.date}</Text>
-                    <Text >Temperature: 
-                        <Text style={styles.temperature}>{item.temp.toFixed(1)} °C</Text></Text>
-                    <Text>Description: {item.description}</Text>
+                        <Image source={{ uri: item.image }} style={styles.image} />
+                        <Text style={styles.date}>Date: {item.date}</Text>
+                        <Text>Temperature:
+                            <Text style={styles.temperature}> {item.temp.toFixed(1)} °C</Text>
+                        </Text>
+                        <Text>Description: {item.description}</Text>
                     </View>
+                </TouchableOpacity>
                 )}
                 onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scrollY } } }],

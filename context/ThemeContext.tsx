@@ -8,6 +8,7 @@ type Theme = 'light' | 'dark';
 type ThemeContextType = {
   theme: Theme;
   toggleTheme: () => void;
+  light: boolean;
 };
 
 type ThemeProviderProps = {
@@ -38,6 +39,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       }
     };
     loadTheme();
+    
+    const subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      setTheme(colorScheme || 'light');
+    });
+
+    return () => subscription.remove();
   }, []);
 
   const toggleTheme = async () => {
@@ -47,7 +54,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, light: theme === 'light' }}>
       {children}
     </ThemeContext.Provider>
   );

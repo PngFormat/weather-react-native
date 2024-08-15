@@ -18,20 +18,14 @@ const WeatherApp = ( {navigation}: any  ) => {
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
+  const isLight = theme === 'light';
   const styles = theme === 'light' ? lightTheme : darkTheme;
 
   const handleLocationFetched = (fetchedCity: string) => {
     setCity(fetchedCity);
   };
 
-
-  const renderItem = ({ item }: { item: string }) => (
-    <TouchableHighlight onPress={() => setCity(item)}>
-      <View style={styles.historyItem}>
-        <Text>{item}</Text>
-      </View>
-    </TouchableHighlight>
-  );
+  
   useEffect(() => {
     const loadSearchHistory = async () => {
       const history = await AsyncStorage.getItem('searchHistory');
@@ -51,13 +45,10 @@ const WeatherApp = ( {navigation}: any  ) => {
    
     
        <LinearGradient
-            colors={['#03c2fc', '#61ffba']}
+       colors={isLight ? ['#03c2fc', '#61ffba'] : ['#0b5fa5', '#00ad6b']}
             style={styles.container}
         >
-    <Button 
-        title="See 6-Day Forecast" 
-        onPress={() => navigation.navigate('WeatherForecast', { city })}
-      />
+    
     <Text style={styles.text}>Weather</Text>
     <TextInput
       style={styles.input}
@@ -67,6 +58,10 @@ const WeatherApp = ( {navigation}: any  ) => {
       placeholderTextColor={theme === 'light' ? '#000000' : '#CCCCCC'} 
     />
     <Button title="Refresh Weather" onPress={handleFetchWeather} />
+    <Button 
+        title="See 6-Day Forecast" 
+        onPress={() => navigation.navigate('WeatherForecast', { city })}
+      />
     <Button title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`} onPress={toggleTheme} />
     <Text style={styles.text}>Your location</Text>
     <LocationComponent onLocationFetched={handleLocationFetched} />
