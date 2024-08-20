@@ -25,17 +25,41 @@ const WeatherApp = ({ navigation }: any) => {
     setCity(fetchedCity);
   };
 
+  // const checkWeatherForAlerts = async (weatherData: any) => {
+  //   console.log('Weather data:', weatherData);
+  //   if (weatherData && weatherData.weather[0].main === 'Clouds') {
+  //     console.log('Scheduling notification...');
+  //     await Notifications.scheduleNotificationAsync({
+  //       content: {
+  //         title: 'Rain Alert',
+  //         body: `Heavy rain expected in ${city}. Don't forget your umbrella!`,
+  //       },
+  //       trigger: null,
+  //     });
+  //   }
+  // };
+
   const checkWeatherForAlerts = async (weatherData: any) => {
-    if (weatherData && weatherData.weather[0].main === 'Rain') {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title: 'Rain Alert',
-          body: `Heavy rain expected in ${city}. Don't forget your umbrella!`,
-        },
-        trigger: null, // Use specific trigger settings for real notifications
-      });
-    }
-  };
+  console.log('Weather data:', weatherData);
+
+  if (weatherData && weatherData.weather[0].main === 'Clouds') {
+    console.log('Scheduling notification...');
+
+    await Notifications.scheduleNotificationAsync({
+      content: {
+        title: 'Clouds Alert',
+        body: `Cloudy weather expected in ${weatherData.name}. You might not need an umbrella.`,
+      },
+      trigger: {
+        seconds: 1, 
+      },
+    });
+
+    console.log('Notification scheduled');
+  } else {
+    console.log('No notification needed for current weather');
+  }
+};
 
   useEffect(() => {
     const loadSearchHistory = async () => {
@@ -45,17 +69,24 @@ const WeatherApp = ({ navigation }: any) => {
       }
     };
     loadSearchHistory();
+
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Notification permission not granted');
+      }
+    })();
   }, []);
 
   const handleFetchWeather = useCallback(async () => {
     setLoading(true);
     try {
       const data = await fetchWeatherData(city, searchHistory, setWeatherData, setLoading, setError, setSearchHistory);
-      console.log(data)
       if (data) {
         setWeatherData(data);
         checkWeatherForAlerts(data);
       }
+      // console.log(weatherData)
     } catch (err) {
       console.error(err);
       setError('Failed to fetch weather data');
@@ -64,14 +95,7 @@ const WeatherApp = ({ navigation }: any) => {
     }
   }, [city, searchHistory]);
 
-  useEffect(() => {
-    (async () => {
-      const { status } = await Notifications.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Notification permission not granted');
-      }
-    })();
-  }, []);
+
 
   return (
     <LinearGradient
@@ -107,7 +131,7 @@ const WeatherApp = ({ navigation }: any) => {
           </View>
           <View style={styles.row}>
             <Text style={styles.descTitle}>Description</Text>
-            
+            <Text>{weatherData.weather[0].main}</Text>
           </View>
         </View>
       )}

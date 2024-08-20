@@ -23,5 +23,5 @@ export const loadNotificationPreferences = async () => {
 export const handleSavePreferences = async (isRainNotificationEnabled: boolean) => {
   const preferences = { isRainNotificationEnabled };
   await saveNotificationPreferences(preferences);
-  Alert.alert('Preferences Saved', 'Your notification preferences have been saved.');
+  Alert.alert('Preferences Saved',);
 };
