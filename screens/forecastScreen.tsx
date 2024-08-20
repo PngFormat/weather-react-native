@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Image,ActivityIndicator, Button, StyleSheet, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
+import { Alert, Image, Button, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
 import { fetchWeatherData } from '../functions/fetchWeather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import getLocation from '../functions/getLocation';
 import LocationComponent from '../functions/getLocation';
 import { useTheme } from '../context/ThemeContext';
 import { getWeatherImage } from '../functions/getWeatherImage';
 import { LinearGradient } from 'expo-linear-gradient';
-import { darkTheme,lightTheme } from '../styles/forecastScreenStyle';
+import { darkTheme, lightTheme } from '../styles/forecastScreenStyle';
+import * as Notifications from 'expo-notifications';
 
-const WeatherApp = ( {navigation}: any  ) => {
+const WeatherApp = ({ navigation }: any) => {
   const { theme, toggleTheme } = useTheme();
   const [weatherData, setWeatherData] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -25,7 +25,18 @@ const WeatherApp = ( {navigation}: any  ) => {
     setCity(fetchedCity);
   };
 
-  
+  const checkWeatherForAlerts = async (weatherData: any) => {
+    if (weatherData && weatherData.weather[0].main === 'Rain') {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Rain Alert',
+          body: `Heavy rain expected in ${city}. Don't forget your umbrella!`,
+        },
+        trigger: null, // Use specific trigger settings for real notifications
+      });
+    }
+  };
+
   useEffect(() => {
     const loadSearchHistory = async () => {
       const history = await AsyncStorage.getItem('searchHistory');
@@ -36,87 +47,104 @@ const WeatherApp = ( {navigation}: any  ) => {
     loadSearchHistory();
   }, []);
 
-  const handleFetchWeather = useCallback(() => {
-    fetchWeatherData(city, searchHistory, setWeatherData, setLoading, setError, setSearchHistory);
-    setCity(city);
+  const handleFetchWeather = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchWeatherData(city, searchHistory, setWeatherData, setLoading, setError, setSearchHistory);
+      console.log(data)
+      if (data) {
+        setWeatherData(data);
+        checkWeatherForAlerts(data);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to fetch weather data');
+    } finally {
+      setLoading(false);
+    }
   }, [city, searchHistory]);
 
+  useEffect(() => {
+    (async () => {
+      const { status } = await Notifications.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Notification permission not granted');
+      }
+    })();
+  }, []);
+
   return (
-   
-    
-       <LinearGradient
-       colors={isLight ? ['#03c2fc', '#61ffba'] : ['#0b5fa5', '#00ad6b']}
-            style={styles.container}
-        >
-    
-    <Text style={styles.text}>Weather</Text>
-    <TextInput
-      style={styles.input}
-      placeholder="Enter city"
-      value={city}
-      onChangeText={setCity}
-      placeholderTextColor={theme === 'light' ? '#000000' : '#CCCCCC'} 
-    />
-    <Button title="Refresh Weather" onPress={handleFetchWeather} />
-    <Button 
-        title="See 6-Day Forecast" 
+    <LinearGradient
+      colors={isLight ? ['#03c2fc', '#61ffba'] : ['#0b5fa5', '#00ad6b']}
+      style={styles.container}
+    >
+      <Text style={styles.text}>Weather</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Enter city"
+        value={city}
+        onChangeText={setCity}
+        placeholderTextColor={theme === 'light' ? '#000000' : '#CCCCCC'}
+      />
+      <Button title="Refresh Weather" onPress={handleFetchWeather} />
+      <Button
+        title="See 6-Day Forecast"
         onPress={() => navigation.navigate('WeatherForecast', { city })}
       />
-    <Button title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`} onPress={toggleTheme} />
-    <Text style={styles.text}>Your location</Text>
-    <LocationComponent onLocationFetched={handleLocationFetched} />
-    
-         {weatherData && (
+      <Button title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`} onPress={toggleTheme} />
+      <Text>Your location</Text>
+      <LocationComponent onLocationFetched={handleLocationFetched} />
+
+      {weatherData && (
         <View>
           <View style={styles.row}>
             <Text>Weather in: {city}</Text>
-            <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/8354/8354127.png'}} style={styles.icon}></Image>
+            <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/8354/8354127.png' }} style={styles.icon} />
           </View>
           <View style={styles.row}>
-          <Text>Temperature: {weatherData.main.temp} °C</Text>
-          <Image source={{uri:'https://static-00.iconduck.com/assets.00/thermometer-celsius-icon-1669x2048-7lousfb6.png'}} style={styles.icon}></Image>
+            <Text>Temperature: <Text style={styles.descTitle}>{weatherData.main.temp} °C</Text></Text>
+            <Image source={{ uri: 'https://static-00.iconduck.com/assets.00/thermometer-celsius-icon-1669x2048-7lousfb6.png' }} style={styles.icon} />
           </View>
           <View style={styles.row}>
-          <Text>Description: {weatherData.weather[0].description}</Text>
-          <Image source={{uri:'https://cdn-icons-png.flaticon.com/512/8655/8655461.png'}} style={styles.icon}></Image>
-         </View>
-
+            <Text style={styles.descTitle}>Description</Text>
+            
+          </View>
         </View>
       )}
-       
+
       <View style={styles.historyContainer}>
-      <Text>Search History:</Text>
-      {searchHistory.length > 3 ? (
-       <FlatList
-       data={searchHistory}
-       keyExtractor={(item, index) => index.toString()}
-       renderItem={({ item }) => (
-         <TouchableHighlight onPress={() => setCity(item)}>
-           <View style={styles.historyItem}>
-             <Text>{item}</Text>
-           </View>
-         </TouchableHighlight>
-       )}
-       contentContainerStyle={styles.listContent}
-     />
-      ): (
-        <ScrollView>
-          {searchHistory.map((item, index) => (
-            <TouchableHighlight key={index} onPress={() => setCity(item)}>
-              <View style={styles.historyItem}>
-                            <Text>{item}</Text>
-                            </View>
+        <Text>Search History:</Text>
+        {searchHistory.length > 3 ? (
+          <FlatList
+            data={searchHistory}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <TouchableHighlight onPress={() => setCity(item)}>
+                <View style={styles.historyItem}>
+                  <Text>{item}</Text>
+                </View>
+              </TouchableHighlight>
+            )}
+            contentContainerStyle={styles.listContent}
+            scrollEnabled={searchHistory.length > 4}
+            style={{ maxHeight: 200 }}
+          />
+        ) : (
+          <ScrollView>
+            {searchHistory.map((item, index) => (
+              <TouchableHighlight key={index} onPress={() => setCity(item)}>
+                <View style={styles.historyItem}>
+                  <Text>{item}</Text>
+                </View>
               </TouchableHighlight>
             ))}
           </ScrollView>
-      )}
-      
-      </View>
-      {weatherData&& (
-            <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description}></Image>
         )}
-      </LinearGradient>
-  
+      </View>
+      {weatherData && (
+        <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description} />
+      )}
+    </LinearGradient>
   );
 };
 

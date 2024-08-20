@@ -23,6 +23,7 @@ export const fetchWeatherData = async (city: string, searchHistory: string[], se
     }, 10000); 
   } catch (e: any) {
     setError(e.message);
+    return null;
   } finally {
     setLoading(false);
   }

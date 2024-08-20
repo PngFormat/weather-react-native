@@ -14,8 +14,23 @@ export const lightTheme = StyleSheet.create({
     width: 300,
     height: 300,
   },
+  descTitle: {
+    color: '#FFFFFF',            
+    fontSize: 28,                 
+    fontWeight: 'bold',       
+    textShadowColor: '#000000',  
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 4,     
+    textAlign: 'center',       
+  },
   text: {
-    color: '#000000',
+    color: '#FFFFFF',            
+    fontSize: 28,                 
+    fontWeight: 'bold',       
+    textShadowColor: '#000000',  
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 4,     
+    textAlign: 'center', 
   },
   input: {
     height: 40,
@@ -59,15 +74,31 @@ export const darkTheme = StyleSheet.create({
     padding: 24,
     backgroundColor: '#000000',
   },
+
   listContent: {
     paddingBottom: 20,
+  },
+  descTitle: {
+    color: '#FFFFFF',            
+    fontSize: 28,                 
+    fontWeight: 'bold',       
+    textShadowColor: '#000000',  
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 4,     
+    textAlign: 'center', 
   },
   description: {
     width: 300,
     height: 300,
   },
   text: {
-    color: '#FFFFFF',
+    color: '#FFFFFF',            
+    fontSize: 28,                 
+    fontWeight: 'bold',       
+    textShadowColor: '#000000',  
+    textShadowOffset: { width: 2, height: 2 }, 
+    textShadowRadius: 4,     
+    textAlign: 'center', 
   },
   historyContainer: {
     borderRadius: 20,

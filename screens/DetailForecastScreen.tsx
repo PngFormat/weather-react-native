@@ -3,6 +3,8 @@ import { Image,View, Text, Button, StyleSheet, ActivityIndicator, FlatList, Aler
 import { LinearGradient } from 'expo-linear-gradient';
 import axios from 'axios';
 import { getWeatherImage } from '../functions/getWeatherImage';
+import WeatherChart from './WeatherChart';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const API_KEY_WEATHER = 'cbf8b8330b7cb5b3f1e535563cba25bc';
 
@@ -80,6 +82,7 @@ const DetailForecast: React.FC<{ navigation: any, route: any }> = ({ navigation,
             colors={['#0b5fa5', '#00ad6b']}
             style={styles.container}
         >
+            <ScrollView>
             <Text style={styles.title}>Hourly Forecast for {city}</Text>
             <FlatList
                 data={hourlyData}
@@ -87,10 +90,12 @@ const DetailForecast: React.FC<{ navigation: any, route: any }> = ({ navigation,
                 keyExtractor={(item) => item.dt.toString()}
                 contentContainerStyle={styles.listContainer}
             />
+            <WeatherChart hourlyData={hourlyData} />
             <Button
                 title="Back to Weather"
                 onPress={() => navigation.goBack()}
             />
+            </ScrollView>
         </LinearGradient>
     );
 };

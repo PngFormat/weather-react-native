@@ -8,6 +8,8 @@ export const getWeatherImage = (description: string) =>{
             return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8Q3KLzcPNM93f69ufKa6EKEULt17CCtf_CQ&s';
         case 'broken clouds':
             return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQuBdn6aPhZ514QGM8xXaJyIUIVgIPng73KA&s';
+        case 'light rain':
+            return 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSXO4addlttIpSIE2nCz3ao4BdCEbSu1W_-Uw&s';
         case 'overcast clouds':
             return 'https://www.rochesterfirst.com/wp-content/uploads/sites/66/2021/04/sky-1107579_1920.jpg';
         case 'rain':
