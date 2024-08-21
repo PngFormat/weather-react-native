@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Alert, Image, Button, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList } from 'react-native';
+import { Alert, Image, Button, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import { fetchWeatherData } from '../functions/fetchWeather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LocationComponent from '../functions/getLocation';
@@ -21,45 +21,31 @@ const WeatherApp = ({ navigation }: any) => {
   const isLight = theme === 'light';
   const styles = theme === 'light' ? lightTheme : darkTheme;
 
-  const handleLocationFetched = (fetchedCity: string) => {
+  const handleLocationFetched = (location: { latitude: number; longitude: number }, fetchedCity: string) => {
     setCity(fetchedCity);
-  };
-
-  // const checkWeatherForAlerts = async (weatherData: any) => {
-  //   console.log('Weather data:', weatherData);
-  //   if (weatherData && weatherData.weather[0].main === 'Clouds') {
-  //     console.log('Scheduling notification...');
-  //     await Notifications.scheduleNotificationAsync({
-  //       content: {
-  //         title: 'Rain Alert',
-  //         body: `Heavy rain expected in ${city}. Don't forget your umbrella!`,
-  //       },
-  //       trigger: null,
-  //     });
-  //   }
-  // };
-
-  const checkWeatherForAlerts = async (weatherData: any) => {
-  console.log('Weather data:', weatherData);
-
-  if (weatherData && weatherData.weather[0].main === 'Clouds') {
-    console.log('Scheduling notification...');
-
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'Clouds Alert',
-        body: `Cloudy weather expected in ${weatherData.name}. You might not need an umbrella.`,
-      },
-      trigger: {
-        seconds: 1, 
-      },
-    });
-
-    console.log('Notification scheduled');
-  } else {
-    console.log('No notification needed for current weather');
-  }
+    setCurrentLocation(location);
 };
+
+
+  const checkWeatherForAlerts = useCallback(async (weatherData: any) => {
+    if (weatherData && weatherData.weather[0].main === 'Clouds') {
+      console.log('Scheduling notification...');
+  
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Clouds Alert',
+          body: `Cloudy weather expected in ${weatherData.name}. You might not need an umbrella.`,
+        },
+        trigger: {
+          seconds: 1, 
+        },
+      });
+  
+      console.log('Notification scheduled');
+    } else {
+      console.log('No notification needed for current weather');
+    }
+  }, []);
 
   useEffect(() => {
     const loadSearchHistory = async () => {
@@ -80,13 +66,13 @@ const WeatherApp = ({ navigation }: any) => {
 
   const handleFetchWeather = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const data = await fetchWeatherData(city, searchHistory, setWeatherData, setLoading, setError, setSearchHistory);
       if (data) {
         setWeatherData(data);
         checkWeatherForAlerts(data);
       }
-      // console.log(weatherData)
     } catch (err) {
       console.error(err);
       setError('Failed to fetch weather data');
@@ -94,8 +80,6 @@ const WeatherApp = ({ navigation }: any) => {
       setLoading(false);
     }
   }, [city, searchHistory]);
-
-
 
   return (
     <LinearGradient
@@ -116,8 +100,12 @@ const WeatherApp = ({ navigation }: any) => {
         onPress={() => navigation.navigate('WeatherForecast', { city })}
       />
       <Button title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`} onPress={toggleTheme} />
+
       <Text>Your location</Text>
       <LocationComponent onLocationFetched={handleLocationFetched} />
+
+      {loading && <ActivityIndicator size="large" color="#00ff00" />}
+      {error && <Text style={{ color: 'red' }}>{error}</Text>}
 
       {weatherData && (
         <View>
@@ -168,6 +156,17 @@ const WeatherApp = ({ navigation }: any) => {
       {weatherData && (
         <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description} />
       )}
+    
+    <Button
+  title="WeatherMap"
+  onPress={() => {
+    if (currentLocation) {
+      navigation.navigate('WeatherMap', { location: currentLocation });
+    } else {
+      Alert.alert('Location not available', 'Unable to fetch your current location.');
+    }
+  }}
+/>
     </LinearGradient>
   );
 };

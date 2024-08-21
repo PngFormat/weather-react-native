@@ -11,17 +11,46 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.yourcompany.newproject",
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "ACCESS_FINE_LOCATION",   
+        "ACCESS_COARSE_LOCATION",
+        "com.google.android.c2dm.permission.RECEIVE", 
+        "android.permission.RECEIVE_BOOT_COMPLETED", 
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ],
+      "googleServicesFile": "./google-services.json"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.newproject",
+      "buildNumber": "1.0.0",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.xxxxxxx-xxxxxxxxxxxx" 
+        }
+      },
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "fetch",
+          "remote-notification"
+        ]
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "your-eas-project-id" 
+      }
     }
   }
 }
