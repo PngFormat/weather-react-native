@@ -44,10 +44,7 @@ export default function Page() {
         setSearchHistory(updatedHisrtory);
         await AsyncStorage.setItem('searchHistory',JSON.stringify(updatedHisrtory))
         setError(null);
-        setTimeout(() => {
-
-          setWeatherData(null);
-        }, 10000);
+  
 
       } catch (e: any) {
         setError(e.message);

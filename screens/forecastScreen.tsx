@@ -86,6 +86,7 @@ const WeatherApp = ({ navigation }: any) => {
       colors={isLight ? ['#03c2fc', '#61ffba'] : ['#0b5fa5', '#00ad6b']}
       style={styles.container}
     >
+      <Text style={styles.text}>{i18n.t('weather')}</Text>
       <Text style={styles.text}>Weather</Text>
       <TextInput
         style={styles.input}
@@ -110,8 +111,6 @@ const WeatherApp = ({ navigation }: any) => {
       {weatherData && (
         <View>
           <View style={styles.row}>
-            <Text>Weather in: {city}</Text>
-            <Image source={{ uri: 'https://cdn-icons-png.flaticon.com/512/8354/8354127.png' }} style={styles.icon} />
           </View>
           <View style={styles.row}>
             <Text>Temperature: <Text style={styles.descTitle}>{weatherData.main.temp} °C</Text></Text>
@@ -119,7 +118,6 @@ const WeatherApp = ({ navigation }: any) => {
           </View>
           <View style={styles.row}>
             <Text style={styles.descTitle}>Description</Text>
-            <Text>{weatherData.weather[0].main}</Text>
           </View>
         </View>
       )}

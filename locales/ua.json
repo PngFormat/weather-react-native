@@ -1,0 +1,15 @@
+{
+    "weather": "Погода",
+    "enter_city": "Введіть місто",
+    "refresh_weather": "Оновити погоду",
+    "see_forecast": "Переглянути 6-денний прогноз",
+    "switch_theme": "Переключити на темну тему",
+    "your_location": "Ваше місцезнаходження",
+    "search_history": "Історія пошуку",
+    "temperature": "Температура",
+    "description": "Опис",
+    "weather_map": "Карта погоди",
+    "location_not_available": "Місцезнаходження недоступне",
+    "location_error_message": "Не вдалося отримати ваше поточне місцезнаходження."
+  }
+  
