@@ -5,7 +5,8 @@ import { getCityName } from './getCityName';
 import { useLocation } from '../context/LocationContext';
 
 interface ILocationProps { 
-  onLocationFetched: (city: string) => void;
+    onLocationFetched: (location: { latitude: number; longitude: number }, city: string) => void;
+  
 }
 
 const LocationComponent: React.FC<ILocationProps> = ({ onLocationFetched }) => {
@@ -14,34 +15,50 @@ const LocationComponent: React.FC<ILocationProps> = ({ onLocationFetched }) => {
   const [city, setCity] = useState<string>('Fetching city...');
 
   useEffect(() => {
-      (async () => {
-          let { status } = await Location.requestForegroundPermissionsAsync();
-          if (status !== 'granted') {
-              setErrorMsg('Permission to access location was denied');
-              return;
-          }
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
 
-          let currentLocation = await Location.getCurrentPositionAsync();
-          setLocation({ latitude: currentLocation.coords.latitude, longitude: currentLocation.coords.longitude });
-        
-          if (currentLocation) {
-              const cityName = await getCityName(currentLocation.coords.latitude, currentLocation.coords.longitude);
-              setCity(cityName);
-              onLocationFetched(cityName);
+      try {
+        let currentLocation = await Location.getCurrentPositionAsync();
+        setLocation({
+          latitude: currentLocation.coords.latitude,
+          longitude: currentLocation.coords.longitude,
+        });
+
+        if (currentLocation) {
+          const cityName = await getCityName(currentLocation.coords.latitude, currentLocation.coords.longitude);
+
+          if (cityName) {
+            setCity(cityName);
+            onLocationFetched(
+                { latitude: currentLocation.coords.latitude, longitude: currentLocation.coords.longitude }, 
+                cityName
+              );         
+             } else {
+            setCity('City not found');
           }
-      })();
+        }
+      } catch (error) {
+        console.error('Error fetching location or city:', error);
+        setErrorMsg('Error fetching location or city');
+      }
+    })();
   }, [setLocation, onLocationFetched]);
 
   return ( 
-      <View>
-          {errorMsg ? <Text>{errorMsg}</Text> : null}
-          {location ? (
-              <Text>Lat: {location.latitude}, Lon: {location.longitude}</Text>
-          ) : (
-              <Text>Fetching Location...</Text>
-          )}
-          <Text>City: {city}</Text>
-      </View>
+    <View>
+      {errorMsg && <Text>{errorMsg}</Text>}
+      {location ? (
+        <Text>Lat: {location.latitude}, Lon: {location.longitude}</Text>
+      ) : (
+        <Text>Fetching Location...</Text>
+      )}
+      <Text>City: {city}</Text>
+    </View>
   );
 }
 

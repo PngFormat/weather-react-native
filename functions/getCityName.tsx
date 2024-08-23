@@ -1,20 +1,20 @@
 import axios from 'axios';
 
-const API_KEY_OPENCAGE = '7641762b14a642da84ffc407bcc93a2f'; 
+const cities = [
+    { name: 'Kryvyi Rih', latitude: 47.9363, longitude: 33.0615 },
+    { name: 'Kyiv', latitude: 50.4501, longitude: 30.5234 },
+    { name: 'Lviv', latitude: 49.8397, longitude: 24.0297 },
+];
 
-export const getCityName = async (latitude:number,longitude:number) => {
-    try{
-        const response = await axios.get(
-            `https://api.opencagedata.com/geocode/v1/json?q=${47.9363}+${33.0615}&key=${API_KEY_OPENCAGE}`
-        )
-        if( response.data && response.data.results.length > 0  ){
-            const city = response.data.results[0].components.city || response.data.results[0].components.town || response.data.results[0].components.village;
-            return city || 'Unknown city'
+export const getCityName = (latitude: number, longitude: number): string => {
+    const threshold = 0.01; 
+    for (const city of cities) {
+        const latDiff = Math.abs(city.latitude - latitude);
+        const lonDiff = Math.abs(city.longitude - longitude);
+
+        if (latDiff <= threshold && lonDiff <= threshold) {
+            return city.name;
         }
     }
-    catch(e) {
-        console.error('Error fetching city ',e)
-        return 'Unknown location';
-    } 
-
-}
+    return '';
+};

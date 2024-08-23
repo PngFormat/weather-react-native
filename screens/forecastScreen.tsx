@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Alert, Image, Button, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList, ActivityIndicator } from 'react-native';
+import {TouchableOpacity,Modal, Alert, Image, Button, Text, TextInput, View, TouchableHighlight, ScrollView, FlatList, ActivityIndicator } from 'react-native';
 import { fetchWeatherData } from '../functions/fetchWeather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LocationComponent from '../functions/getLocation';
@@ -8,6 +8,7 @@ import { getWeatherImage } from '../functions/getWeatherImage';
 import { LinearGradient } from 'expo-linear-gradient';
 import { darkTheme, lightTheme } from '../styles/forecastScreenStyle';
 import * as Notifications from 'expo-notifications';
+import { t, setLanguage } from '../functions/changeLanguage';
 
 const WeatherApp = ({ navigation }: any) => {
   const { theme, toggleTheme } = useTheme();
@@ -17,6 +18,8 @@ const WeatherApp = ({ navigation }: any) => {
   const [city, setCity] = useState<string>('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [language, setLang] = useState<'en' | 'uk'>('en'); 
+  const [modalVisible, setModalVisible] = useState(false);
 
   const isLight = theme === 'light';
   const styles = theme === 'light' ? lightTheme : darkTheme;
@@ -24,28 +27,30 @@ const WeatherApp = ({ navigation }: any) => {
   const handleLocationFetched = (location: { latitude: number; longitude: number }, fetchedCity: string) => {
     setCity(fetchedCity);
     setCurrentLocation(location);
-};
-
+  };
 
   const checkWeatherForAlerts = useCallback(async (weatherData: any) => {
     if (weatherData && weatherData.weather[0].main === 'Clouds') {
-      console.log('Scheduling notification...');
-  
       await Notifications.scheduleNotificationAsync({
         content: {
           title: 'Clouds Alert',
-          body: `Cloudy weather expected in ${weatherData.name}. You might not need an umbrella.`,
+          body: `It's cloudy in ${weatherData.name}`,
         },
-        trigger: {
-          seconds: 1, 
-        },
+        trigger: { seconds: 1 },
       });
-  
-      console.log('Notification scheduled');
-    } else {
-      console.log('No notification needed for current weather');
     }
   }, []);
+
+  const handleChangeLanguage = useCallback((lang: 'en' | 'uk') => {
+    setLanguage(lang);  
+    setLang(lang);  
+    setModalVisible(false);
+  }, []);
+  
+
+  useEffect(() => {
+    navigation.setOptions({ title: t('pageTitle') });  
+  }, [language, t]); 
 
   useEffect(() => {
     const loadSearchHistory = async () => {
@@ -62,7 +67,7 @@ const WeatherApp = ({ navigation }: any) => {
         Alert.alert('Notification permission not granted');
       }
     })();
-  }, []);
+  }, [t]);
 
   const handleFetchWeather = useCallback(async () => {
     setLoading(true);
@@ -75,34 +80,38 @@ const WeatherApp = ({ navigation }: any) => {
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to fetch weather data');
+      setError('Error fetching weather data');
     } finally {
       setLoading(false);
     }
-  }, [city, searchHistory]);
+  }, [city, searchHistory, checkWeatherForAlerts]);
 
   return (
     <LinearGradient
       colors={isLight ? ['#03c2fc', '#61ffba'] : ['#0b5fa5', '#00ad6b']}
       style={styles.container}
     >
-      <Text style={styles.text}>{i18n.t('weather')}</Text>
-      <Text style={styles.text}>Weather</Text>
+      <Text>{t('greeting')}</Text>
+      <Text>{t('weather')}</Text>
       <TextInput
         style={styles.input}
-        placeholder="Enter city"
+        placeholder={t('enterCity')}
         value={city}
         onChangeText={setCity}
         placeholderTextColor={theme === 'light' ? '#000000' : '#CCCCCC'}
       />
-      <Button title="Refresh Weather" onPress={handleFetchWeather} />
+      <Button title={t('select_language')} onPress={() => setModalVisible(true)} /> 
+
+
+
+      <Button title={t('refresh_weather')} onPress={handleFetchWeather} />
       <Button
-        title="See 6-Day Forecast"
+        title={t('see_forecast')}
         onPress={() => navigation.navigate('WeatherForecast', { city })}
       />
-      <Button title={`Switch to ${theme === 'light' ? 'Dark' : 'Light'} Theme`} onPress={toggleTheme} />
+      <Button title={t('switch_theme')} onPress={toggleTheme} />
 
-      <Text>Your location</Text>
+      <Text>{t('yourLocation')}</Text>
       <LocationComponent onLocationFetched={handleLocationFetched} />
 
       {loading && <ActivityIndicator size="large" color="#00ff00" />}
@@ -111,19 +120,17 @@ const WeatherApp = ({ navigation }: any) => {
       {weatherData && (
         <View>
           <View style={styles.row}>
-          </View>
-          <View style={styles.row}>
-            <Text>Temperature: <Text style={styles.descTitle}>{weatherData.main.temp} °C</Text></Text>
+            <Text>{t('temperature')}: <Text style={styles.descTitle}>{weatherData.main.temp} °C</Text></Text>
             <Image source={{ uri: 'https://static-00.iconduck.com/assets.00/thermometer-celsius-icon-1669x2048-7lousfb6.png' }} style={styles.icon} />
           </View>
           <View style={styles.row}>
-            <Text style={styles.descTitle}>Description</Text>
+            <Text style={styles.descTitle}>{weatherData.weather[0].description}</Text>
           </View>
         </View>
       )}
 
       <View style={styles.historyContainer}>
-        <Text>Search History:</Text>
+        <Text>{t('searchHistory')}:</Text>
         {searchHistory.length > 3 ? (
           <FlatList
             data={searchHistory}
@@ -154,17 +161,36 @@ const WeatherApp = ({ navigation }: any) => {
       {weatherData && (
         <Image source={{ uri: getWeatherImage(weatherData.weather[0].description) }} style={styles.description} />
       )}
-    
-    <Button
-  title="WeatherMap"
-  onPress={() => {
-    if (currentLocation) {
-      navigation.navigate('WeatherMap', { location: currentLocation });
-    } else {
-      Alert.alert('Location not available', 'Unable to fetch your current location.');
-    }
-  }}
-/>
+
+      <Button
+        title={t('weatherMap')}
+        onPress={() => {
+          if (currentLocation) {
+            navigation.navigate('WeatherMap', { location: currentLocation });
+          } else {
+            Alert.alert(t('locationNotAvailable'), t('enableLocationServices'));
+          }
+        }}
+      />
+
+<Modal
+        visible={modalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' }}>
+          <View style={{ width: 300, backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+            <TouchableOpacity onPress={() => handleChangeLanguage('en')}>
+              <Text style={{ fontSize: 18, marginVertical: 10 }}>{t('english')}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleChangeLanguage('uk')}>
+              <Text style={{ fontSize: 18, marginVertical: 10 }}>{t('uk')}</Text>
+            </TouchableOpacity>
+            <Button title={t('cancel')} onPress={() => setModalVisible(false)} />
+          </View>
+        </View>
+      </Modal>
     </LinearGradient>
   );
 };

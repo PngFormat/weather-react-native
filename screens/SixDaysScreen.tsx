@@ -1,10 +1,9 @@
+// SixDaysForecast.tsx
 import React, { useEffect, useState } from 'react';
-import {TouchableOpacity,Image,View, Text, StyleSheet, ActivityIndicator, FlatList, Alert,Animated} from 'react-native';
-import axios from 'axios';
-import { fetchWeatherData } from '../functions/fetchWeather';
-import { getWeatherImage } from '../functions/getWeatherImage';
+import { TouchableOpacity, Image, View, Text, StyleSheet, ActivityIndicator, FlatList, Alert, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
+import { getWeatherImage } from '../functions/getWeatherImage';
+import axios from 'axios';
 
 const API_KEY_WEATHER = 'cbf8b8330b7cb5b3f1e535563cba25bc';
 
@@ -18,8 +17,7 @@ export default function SixDaysForecast({ route, navigation }: any) {
 
     useEffect(() => {
         fetchForecastData();
-
-    },[city]);
+    }, [city]);
 
     const fetchForecastData = async () => {
         try {
@@ -35,11 +33,14 @@ export default function SixDaysForecast({ route, navigation }: any) {
         } finally {
             setLoading(false);
         }
-    }
-    if(loading){
-        <View style={styles.container}>
-            <Text> Error: {error}</Text>
-        </View>
+    };
+
+    if (loading) {
+        return (
+            <View style={styles.container}>
+                <ActivityIndicator size="large" color="#00ff00" />
+            </View>
+        );
     }
 
     if (!forecastData) {
@@ -57,49 +58,45 @@ export default function SixDaysForecast({ route, navigation }: any) {
     });
 
     const dailyForecastArray = forecastData.list
-    .filter((item:any, index: number) => index % 8 ===0)
-    .slice(0,6)
-    .map((item:any) => ({
-        date: new Date(item.dt * 1000).toLocaleDateString(),
-        temp: item.main.temp,
-        description: item.weather[0].description,
-        image: getWeatherImage(item.weather[0].description)
-    }));
-    
+        .filter((item: any, index: number) => index % 8 === 0)
+        .slice(0, 6)
+        .map((item: any) => ({
+            date: new Date(item.dt * 1000).toLocaleDateString(),
+            temp: item.main.temp,
+            description: item.weather[0].description,
+            image: getWeatherImage(item.weather[0].description)
+        }));
 
-        return (
-         
-            <LinearGradient
+    return (
+        <LinearGradient
             colors={['#03c2fc', '#61ffba']}
             style={styles.container}
         >
             <Animated.View style={[styles.container, { backgroundColor }]}>
-            <Text  style={styles.title}>5-Day Weather Forecast for {city}</Text>
-            <Animated.FlatList
-                data={dailyForecastArray}
-                keyExtractor={(item) => item.date}
-                renderItem={({ item }) => (
-                    <TouchableOpacity onPress={() => navigation.navigate('DetailWeather', { city })}>
-                    <View style={styles.dayContainer}>
-                        <Image source={{ uri: item.image }} style={styles.image} />
-                        <Text style={styles.date}>Date: {item.date}</Text>
-                        <Text>Temperature:
-                            <Text style={styles.temperature}> {item.temp.toFixed(1)} °C</Text>
-                        </Text>
-                        <Text>Description: {item.description}</Text>
-                    </View>
-                </TouchableOpacity>
-                )}
-                onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false }
-                )}
-            />
-        </Animated.View>
+                <Text style={styles.title}>5-Day Weather Forecast for {city}</Text>
+                <Animated.FlatList
+                    data={dailyForecastArray}
+                    keyExtractor={(item) => item.date}
+                    renderItem={({ item }) => (
+                        <TouchableOpacity onPress={() => navigation.navigate('DetailWeather', { city: city })}>
+                            <View style={styles.dayContainer}>
+                                <Image source={{ uri: item.image }} style={styles.image} />
+                                <Text style={styles.date}>Date: {item.date}</Text>
+                                <Text>Temperature:
+                                    <Text style={styles.temperature}> {item.temp.toFixed(1)} °C</Text>
+                                </Text>
+                                <Text>Description: {item.description}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    onScroll={Animated.event(
+                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                        { useNativeDriver: false }
+                    )}
+                />
+            </Animated.View>
         </LinearGradient>
-        )
-    
-
+    );
 }
 
 const styles = StyleSheet.create({
@@ -107,7 +104,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         padding: 24,
-        borderRadius:15,
+        borderRadius: 15,
     },
     temperature: {
         fontWeight: '500',
@@ -124,8 +121,8 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     description: {
-        width:170,
-        height:70,
+        width: 170,
+        height: 70,
     },
     title: {
         fontWeight: '500',
@@ -137,6 +134,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginBottom: 10,
         borderWidth: 2,
-        borderColor: '#ffffff', 
+        borderColor: '#ffffff',
     },
 });

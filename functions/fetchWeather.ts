@@ -46,9 +46,9 @@ export const fetchWeatherData = async (
 
     setError(null);
 
-    // setTimeout(() => {
-    //   setWeatherData(null);
-    // }, 10000);
+    setTimeout(() => {
+      setWeatherData(null);
+    }, 10000);
 
     return weatherData;
   } catch (e: any) {
