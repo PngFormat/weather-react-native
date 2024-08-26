@@ -11,7 +11,7 @@ const WeatherAlerts: React.FC<WeatherAlertsProps> = ({ weatherData }) => {
     const checkWeatherForAlerts = useCallback(async () => {
         if (weatherData) {
           console.log('Weather data available:', weatherData);
-          if (weatherData.weather[0].main === 'Clear') {
+          if (weatherData.weather[0].main === 'Clouds') {
             console.log('Triggering notification...');
             await Notifications.scheduleNotificationAsync({
                 content: {

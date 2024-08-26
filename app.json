@@ -14,7 +14,8 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff",
+        "package": "com.alfaran.forecast"
       },
       "package": "com.yourcompany.newproject",
       "permissions": [
@@ -47,7 +48,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-eas-project-id"
+        "projectId": "0a2e2804-b9af-4b70-9f31-3783bcddcc47"
       }
     }
   }
