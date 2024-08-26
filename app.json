@@ -18,15 +18,13 @@
       },
       "package": "com.yourcompany.newproject",
       "permissions": [
+        "NOTIFICATIONS",
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
-        "ACCESS_FINE_LOCATION",   
-        "ACCESS_COARSE_LOCATION",
-        "com.google.android.c2dm.permission.RECEIVE", 
-        "android.permission.RECEIVE_BOOT_COMPLETED", 
-        "android.permission.SYSTEM_ALERT_WINDOW"
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
       ],
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./app/src/google-services.json"
     },
     "ios": {
       "supportsTablet": true,
@@ -34,7 +32,7 @@
       "buildNumber": "1.0.0",
       "config": {
         "googleSignIn": {
-          "reservedClientId": "com.googleusercontent.apps.xxxxxxx-xxxxxxxxxxxx" 
+          "reservedClientId": "com.googleusercontent.apps.xxxxxxx-xxxxxxxxxxxx"
         }
       },
       "infoPlist": {
@@ -49,7 +47,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "your-eas-project-id" 
+        "projectId": "your-eas-project-id"
       }
     }
   }

@@ -2,10 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Alert, View, Text, Button, StyleSheet, Switch } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Notifications from 'expo-notifications';
+import registerNNPushToken from 'native-notify';
+
 import { loadNotificationPreferences, handleSavePreferences } from '../functions/pushNotifications';
 
 const StartScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [isRainNotificationEnabled, setIsRainNotificationEnabled] = useState<boolean>(false);
+  registerNNPushToken(23217, 'WDRGqdzHrwwNMjhbAYPxLy');
+
 
   useEffect(() => {
     const getPermissions = async () => {
