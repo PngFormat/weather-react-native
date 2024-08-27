@@ -100,7 +100,7 @@ const WeatherApp = ({ navigation }: any) => {
       <Text>{t('weather')}</Text>
       <TextInput
         style={styles.input}
-        placeholder={t('enterCity')}
+        placeholder={t('enter_city')}
         value={city}
         onChangeText={setCity}
         placeholderTextColor={theme === 'light' ? '#000000' : '#CCCCCC'}
