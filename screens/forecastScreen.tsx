@@ -13,6 +13,7 @@ import ButtonComponent from '../components/ButtonForecast';
 import LanguageModal from '../components/LanguageModal';
 import WeatherAlerts from '../components/WeatherAlerts';
 import * as Notifications from 'expo-notifications';
+import BackButtonComponent from '../components/BackButton';
 
 
 const WeatherApp = ({ navigation }: any) => {
@@ -96,6 +97,7 @@ const WeatherApp = ({ navigation }: any) => {
       colors={isLight ? ['#03c2fc', '#61ffba'] : ['#0b5fa5', '#00ad6b']}
       style={styles.container}
     >
+       <BackButtonComponent/>
       <Text>{t('greeting')}</Text>
       <Text>{t('weather')}</Text>
       <TextInput

@@ -3,8 +3,10 @@ import { TouchableOpacity, Image, View, Text, StyleSheet, ActivityIndicator, Fla
 import { LinearGradient } from 'expo-linear-gradient';
 import { getWeatherImage } from '../functions/getWeatherImage';
 import axios from 'axios';
+import BackButtonComponent from '../components/BackButton';
 
 const API_KEY_WEATHER = 'cbf8b8330b7cb5b3f1e535563cba25bc';
+
 
 export default function SixDaysForecast({ route, navigation }: any) {
     const { city } = route.params;
@@ -46,6 +48,7 @@ export default function SixDaysForecast({ route, navigation }: any) {
     if (!forecastData) {
         return (
             <View style={styles.container}>
+                 <BackButtonComponent/>
                 <Text>No data available.</Text>
             </View>
         );
@@ -67,12 +70,13 @@ export default function SixDaysForecast({ route, navigation }: any) {
             image: getWeatherImage(item.weather[0].description)
         }));
 
-    const firstRow = dailyForecastArray.filter((_, index) => index % 2 === 0);
-    const secondRow = dailyForecastArray.filter((_, index) => index % 2 !== 0);
+    const firstRow = dailyForecastArray.filter((_: any, index: any) => index % 2 === 0);
+    const secondRow = dailyForecastArray.filter((_: any, index: any ) => index % 0 !== 0);
 
     return (
         <LinearGradient colors={['#03c2fc', '#61ffba']} style={styles.container}>
             <Animated.View style={[styles.container, { backgroundColor }]}>
+            <BackButtonComponent/>
                 <Text style={styles.title}>5-Day Weather Forecast for {city}</Text>
                 <View style={styles.toggleContainer}>
                     <TouchableOpacity onPress={() => setOrientation('vertical')} style={[styles.toggleButton, orientation === 'horizontal' && styles.activeToggle]}>
@@ -111,7 +115,7 @@ export default function SixDaysForecast({ route, navigation }: any) {
                         </View>
                         <View style={styles.rowContainer}>
                             <Animated.FlatList
-                                data={secondRow}
+                                data={firstRow}
                                 horizontal
                                 keyExtractor={(item) => item.date}
                                 renderItem={({ item }) => (
@@ -150,11 +154,12 @@ export default function SixDaysForecast({ route, navigation }: any) {
                                 </View>
                             </TouchableOpacity>
                         )}
-                        numColumns={2}
+                  
                         onScroll={Animated.event(
                             [{ nativeEvent: { contentOffset: { y: scrollX } } }],
                             { useNativeDriver: false }
                         )}
+                        showsVerticalScrollIndicator={false}
                     />
                 )}
             </Animated.View>
@@ -220,3 +225,7 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
 });
+
+SixDaysForecast.navigationOptions = {
+    headerShown: false,
+};

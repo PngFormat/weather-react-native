@@ -4,6 +4,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { useLocation } from '../context/LocationContext';
 import { fetchWeatherData } from '../functions/fetchWeather';
 import { LinearGradient } from 'expo-linear-gradient';
+import BackButtonComponent from '../components/BackButton';
 
 const WeatherMapLocation = () => {
   const { location } = useLocation();
@@ -78,6 +79,7 @@ const WeatherMapLocation = () => {
       colors={['#03c2fc', '#61ffba']}
       style={styles.container}
     >
+       <BackButtonComponent/>
       <Text style={styles.text}>Weather</Text>
 
       <MapView

@@ -14,7 +14,7 @@ export default function App() {
         <ThemeProvider>
             <LocationProvider>
                 <NavigationContainer>
-                    <Stack.Navigator initialRouteName="WeatherApp">
+                    <Stack.Navigator initialRouteName="WeatherApp" screenOptions={{ headerShown: false }}>
                         <Stack.Screen name="Home" component={StartScreen} />
                         <Stack.Screen name="Weather" component={WeatherApp} />
                         <Stack.Screen name="DetailWeather" component={DetailForecast} />

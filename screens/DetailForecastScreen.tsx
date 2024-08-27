@@ -5,6 +5,7 @@ import axios from 'axios';
 import { getWeatherImage } from '../functions/getWeatherImage';
 import WeatherChart from './WeatherChart';
 import { ScrollView } from 'react-native-gesture-handler';
+import BackButtonComponent from '../components/BackButton';
 
 const API_KEY_WEATHER = 'cbf8b8330b7cb5b3f1e535563cba25bc';
 
@@ -83,6 +84,7 @@ const DetailForecast: React.FC<{ navigation: any, route: any }> = ({ navigation,
             colors={['#0b5fa5', '#00ad6b']}
             style={styles.container}
         >
+             <BackButtonComponent/>
             <View style={styles.toggleContainer}>
                 <TouchableOpacity onPress={() => setOrientation('vertical')} style={[styles.toggleButton, orientation === 'vertical' && styles.activeToggle]}>
                     <Text style={styles.toggleText}>Vertical</Text>
