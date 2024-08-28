@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { getWeatherImage } from '../functions/getWeatherImage';
 import axios from 'axios';
 import BackButtonComponent from '../components/BackButton';
+import { WeatherNotification } from '../functions/WeatherNotifications';
+
 
 const API_KEY_WEATHER = 'cbf8b8330b7cb5b3f1e535563cba25bc';
 
@@ -75,6 +77,7 @@ export default function SixDaysForecast({ route, navigation }: any) {
 
     return (
         <LinearGradient colors={['#03c2fc', '#61ffba']} style={styles.container}>
+            <WeatherNotification city={city}/>
             <Animated.View style={[styles.container, { backgroundColor }]}>
             <BackButtonComponent/>
                 <Text style={styles.title}>5-Day Weather Forecast for {city}</Text>
